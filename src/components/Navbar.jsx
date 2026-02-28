@@ -22,6 +22,12 @@ export default function Navbar() {
             <Link to="/post" className="bg-white text-orange-500 px-3 py-1 rounded-full text-sm font-semibold hover:bg-orange-100">
               + Share Food
             </Link>
+            <Link to="/claims/inbox" className="hover:underline text-sm">
+              Inbox
+            </Link>
+            <Link to="/claims/my" className="hover:underline text-sm">
+              My Claims
+            </Link>
             <Link to="/profile" className="hover:underline text-sm">Profile</Link>
             <button onClick={handleLogout} className="hover:underline text-sm">Logout</button>
           </>

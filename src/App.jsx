@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import PostFoodPage from './pages/PostFoodPage'
 import ProfilePage from './pages/ProfilePage'
+import ClaimsInboxPage from './pages/ClaimsInboxPage'
+import MyClaimsPage from './pages/MyClaimsPage'
 
 export default function App() {
   return (
@@ -20,6 +22,12 @@ export default function App() {
           } />
           <Route path="/profile" element={
             <ProtectedRoute><ProfilePage /></ProtectedRoute>
+          } />
+          <Route path="/claims/inbox" element={
+            <ProtectedRoute><ClaimsInboxPage /></ProtectedRoute>
+          } />
+          <Route path="/claims/my" element={
+            <ProtectedRoute><MyClaimsPage /></ProtectedRoute>
           } />
         </Routes>
       </BrowserRouter>

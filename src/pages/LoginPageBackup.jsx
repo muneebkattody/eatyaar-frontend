@@ -4,11 +4,10 @@ import api from '../api/axios'
 import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
-  const [step, setStep] = useState('email') // 'email' | 'otp' | 'profile'
-  const [email, setEmail] = useState('')
+  const [step, setStep] = useState('phone') // 'phone' | 'otp' | 'profile'
+  const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
   const [city, setCity] = useState('')
   const [area, setArea] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,7 +21,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      await api.post('/auth/send-otp', { email })
+      await api.post('/auth/send-otp', { phone })
       setStep('otp')
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP')
@@ -36,7 +35,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      const res = await api.post('/auth/verify-otp', { email, otp })
+      const res = await api.post('/auth/verify-otp', { phone, otp })
       login(res.data)
       if (res.data.isNewUser) {
         setStep('profile')
@@ -55,7 +54,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     try {
-      await api.patch('/auth/profile', { name, phone, city, area })
+      await api.patch('/auth/profile', { name, city, area })
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save profile')
@@ -80,26 +79,30 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Step 1 — Email */}
-        {step === 'email' && (
+        {/* Step 1 — Phone */}
+        {step === 'phone' && (
           <form onSubmit={handleSendOtp} className="flex flex-col gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full mt-1 border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                required
-              />
+              <label className="text-sm font-medium text-gray-700">Mobile Number</label>
+              <div className="flex mt-1">
+                <span className="bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg px-3 flex items-center text-gray-500 text-sm">+91</span>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="9876543210"
+                  className="flex-1 border border-gray-300 rounded-r-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  required
+                />
+              </div>
             </div>
             <button
               type="submit"
               disabled={loading}
               className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-xl transition disabled:opacity-50"
             >
-              {loading ? 'Sending OTP...' : 'Send OTP'}
+              {loading ? 'Sending...' : 'Send OTP'}
             </button>
           </form>
         )}
@@ -108,15 +111,15 @@ export default function LoginPage() {
         {step === 'otp' && (
           <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
             <p className="text-sm text-gray-600 text-center">
-              OTP sent to <strong>{email}</strong>
+              OTP sent to <strong>+91 {phone}</strong>
               <br />
-              <span className="text-xs text-gray-400">Check your inbox (and spam folder)</span>
+              <span className="text-xs text-gray-400">(Check IntelliJ console in dev)</span>
             </p>
             <input
               type="text"
               maxLength={6}
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter 6-digit OTP"
               className="border border-gray-300 rounded-xl px-4 py-2 text-center text-xl tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
@@ -128,23 +131,9 @@ export default function LoginPage() {
             >
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
-            <div className="flex justify-between text-sm">
-              <button
-                type="button"
-                onClick={() => { setStep('email'); setOtp(''); setError('') }}
-                className="text-gray-400 hover:underline"
-              >
-                Change email
-              </button>
-              <button
-                type="button"
-                onClick={handleSendOtp}
-                disabled={loading}
-                className="text-orange-400 hover:underline disabled:opacity-50"
-              >
-                Resend OTP
-              </button>
-            </div>
+            <button type="button" onClick={() => setStep('phone')} className="text-sm text-gray-400 hover:underline text-center">
+              Change number
+            </button>
           </form>
         )}
 
@@ -157,14 +146,6 @@ export default function LoginPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              required
-            />
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-              placeholder="Mobile number (e.g. 9876543210)"
               className="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
@@ -193,7 +174,6 @@ export default function LoginPage() {
             </button>
           </form>
         )}
-
       </div>
     </div>
   )
